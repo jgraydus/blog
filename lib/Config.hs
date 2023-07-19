@@ -2,6 +2,7 @@ module Config where
 
 import Data.Aeson (eitherDecodeFileStrict, FromJSON)
 import GHC.Generics (Generic)
+import Logger (LogLevel)
 
 data StaticAssetPaths = StaticAssetPaths
   { jsBundlePath :: FilePath
@@ -22,6 +23,7 @@ data ApplicationConfig = ApplicationConfig
   { staticAssetPaths :: StaticAssetPaths
   , serverConfig :: ServerConfig
   , databasePath :: FilePath
+  , logLevel :: LogLevel
   }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)

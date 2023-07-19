@@ -9,6 +9,7 @@ common shared-properties
         -O2
     build-depends:
         base < 5.0,
+        fast-logger,
         http-types,
         wai,
     default-extensions:
@@ -34,6 +35,7 @@ library
     build-depends:
        aeson,
        bytestring,
+       clock,
        http-media,
        mtl,
        servant,
@@ -43,6 +45,7 @@ library
        uuid,
     exposed-modules:
        Config,
+       Logger,
        Web.Application,
     other-modules:
        Web.Api,

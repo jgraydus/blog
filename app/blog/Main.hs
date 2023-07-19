@@ -2,6 +2,7 @@ module Main where
 
 import CommandLineArgs (CommandLineArgs(..), parseCommandLineArgs)
 import Config (ApplicationConfig(..), loadConfig, ServerConfig(..))
+import Logger
 import Network.Wai.Handler.Warp qualified as Warp
 import System.Exit (exitFailure)
 import Web.Application (app)
@@ -17,10 +18,11 @@ main = do
       putStrLn err
       exitFailure
 
-    Right config@ApplicationConfig {..} -> do
+    Right config@ApplicationConfig { logLevel, serverConfig } -> do
       let ServerConfig { port } = serverConfig
-      print config
+      withLogger logLevel $ \logger -> do
+        logger DEBUG (toLogStr . show $ config)
+        logger INFO $ "server listenting on port " <> toLogStr port
 
-      putStrLn $ "server listenting on port " <> show port
-      Warp.run port (app config)
+        Warp.run port (app logger config)
 

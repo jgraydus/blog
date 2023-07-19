@@ -7,6 +7,7 @@
   "serverConfig": {
     "port": 8000
   },
-  "databasePath": "./blog.db"
+  "databasePath": "./blog.db",
+  "logLevel": "DEBUG"
 }
 
