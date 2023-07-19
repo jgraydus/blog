@@ -1,0 +1,95 @@
+module Web.Api.Routes.Blog (
+    BlogApi, blogApiHandler
+) where
+
+import Data.Aeson (FromJSON, ToJSON)
+import Data.Time (UTCTime)
+import Data.Text (Text)
+import Data.UUID (UUID)
+import GHC.Generics (Generic)
+import Servant
+import Web.RouteHandler
+
+type BlogApi =
+  "entries" :> (
+       GetEntries 
+  :<|> GetEntry
+  :<|> CreateEntry
+  :<|> UpdateEntry
+  )
+
+blogApiHandler :: RouteHandler BlogApi
+blogApiHandler =
+       getEntriesHandler
+  :<|> getEntryHandler
+  :<|> createEntryHandler
+  :<|> updateEntryHandler
+
+-------------------------------------------------------------------------------------------
+-- GET /entries
+
+data EntryDesc = EntryDesc
+  { entryId :: UUID
+  , title :: Text
+  , date :: UTCTime
+  , isPublished :: Bool
+  }
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON)
+
+type GetEntries = Get '[JSON] [EntryDesc]
+
+getEntriesHandler :: RouteHandler GetEntries
+getEntriesHandler = pure []
+
+-------------------------------------------------------------------------------------------
+-- GET /entries/:entryId
+
+data Entry = Entry
+  { entryId :: UUID
+  , title :: Text
+  , date :: UTCTime
+  , contents :: Text
+  }
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON)
+
+type GetEntry = Capture "entryId" UUID :> Get '[JSON] Entry
+
+getEntryHandler :: RouteHandler GetEntry
+getEntryHandler = undefined
+
+-------------------------------------------------------------------------------------------
+-- POST /entries
+
+type CreateEntry = ReqBody '[JSON] CreateEntryReqBody :> Post '[JSON] UUID
+
+data CreateEntryReqBody = CreateEntryReqBody
+  { title :: Text
+  , contents :: Text
+  , date :: UTCTime
+  }
+  deriving stock (Generic, Show)
+  deriving anyclass (FromJSON)
+
+createEntryHandler :: RouteHandler CreateEntry
+createEntryHandler = undefined
+
+-------------------------------------------------------------------------------------------
+-- PATCH /entries/:entryId
+
+type UpdateEntry = ReqBody '[JSON] UpdateEntryReqBody :> Patch '[JSON] ()
+
+data UpdateEntryReqBody = UpdateEntryReqBody
+  { entryId :: UUID
+  , title :: Maybe Text
+  , contents :: Maybe Text
+  , date :: Maybe UTCTime
+  , isPublished :: Maybe Bool
+  }
+  deriving stock (Generic, Show)
+  deriving anyclass (FromJSON)
+
+updateEntryHandler :: RouteHandler UpdateEntry
+updateEntryHandler = undefined
+

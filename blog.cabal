@@ -1,0 +1,55 @@
+cabal-version:      3.8
+name:               blog
+version:            0.1.0.0
+
+common shared-properties
+    default-language: GHC2021
+    ghc-options:
+        -Wall
+        -O2
+    build-depends:
+        base < 5.0
+    default-extensions:
+        AllowAmbiguousTypes,
+        DataKinds,
+        DeriveAnyClass,
+        DerivingStrategies,
+        DuplicateRecordFields,
+        FunctionalDependencies,
+        GADTs,
+        LambdaCase,
+        MultiWayIf,
+        NamedFieldPuns,
+        OverloadedStrings,
+        RankNTypes,
+        RecordWildCards,
+        TupleSections,
+        TypeFamilies
+
+library
+    import: shared-properties
+    hs-source-dirs:   lib
+    build-depends:
+       aeson,
+       mtl,
+       servant,
+       servant-server,
+       text,
+       time,
+       uuid,
+    exposed-modules:
+    other-modules:
+       Web.Api.Routes.Blog,
+       Web.RequestContext,
+       Web.RouteHandler
+
+executable blog
+    import: shared-properties
+    hs-source-dirs:   app/blog
+    main-is:          Main.hs
+    ghc-options:
+        -threaded
+        -rtsopts
+        -with-rtsopts=-N
+    build-depends:
+
