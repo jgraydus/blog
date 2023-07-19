@@ -3,12 +3,14 @@ module Web.Api.Routes.Blog (
 ) where
 
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Int (Int64)
 import Data.Time (UTCTime)
 import Data.Text (Text)
-import Data.UUID (UUID)
 import GHC.Generics (Generic)
 import Servant
 import Web.RouteHandler
+
+type EntryId = Int64
 
 type BlogApi =
   "entries" :> (
@@ -29,7 +31,7 @@ blogApiHandler =
 -- GET /entries
 
 data EntryDesc = EntryDesc
-  { entryId :: UUID
+  { entryId :: EntryId
   , title :: Text
   , date :: UTCTime
   , isPublished :: Bool
@@ -46,7 +48,7 @@ getEntriesHandler = pure []
 -- GET /entries/:entryId
 
 data Entry = Entry
-  { entryId :: UUID
+  { entryId :: EntryId
   , title :: Text
   , date :: UTCTime
   , contents :: Text
@@ -54,7 +56,7 @@ data Entry = Entry
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON)
 
-type GetEntry = Capture "entryId" UUID :> Get '[JSON] Entry
+type GetEntry = Capture "entryId" EntryId :> Get '[JSON] Entry
 
 getEntryHandler :: RouteHandler GetEntry
 getEntryHandler = undefined
@@ -62,7 +64,7 @@ getEntryHandler = undefined
 -------------------------------------------------------------------------------------------
 -- POST /entries
 
-type CreateEntry = ReqBody '[JSON] CreateEntryReqBody :> Post '[JSON] UUID
+type CreateEntry = ReqBody '[JSON] CreateEntryReqBody :> Post '[JSON] EntryId
 
 data CreateEntryReqBody = CreateEntryReqBody
   { title :: Text
@@ -81,7 +83,7 @@ createEntryHandler = undefined
 type UpdateEntry = ReqBody '[JSON] UpdateEntryReqBody :> Patch '[JSON] ()
 
 data UpdateEntryReqBody = UpdateEntryReqBody
-  { entryId :: UUID
+  { entryId :: EntryId
   , title :: Maybe Text
   , contents :: Maybe Text
   , date :: Maybe UTCTime

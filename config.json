@@ -1,0 +1,12 @@
+{ "staticAssetPaths": {
+    "jsBundlePath": "./client/build/bundle.js",
+    "jsSrcMapPath": "./client/build/bundle.js.map",
+    "cssBundlePath": "./client/build/bundle.css",
+    "indexPath": "./client/build/index.html"
+  },
+  "serverConfig": {
+    "port": 8000
+  },
+  "databasePath": "./blog.db"
+}
+
