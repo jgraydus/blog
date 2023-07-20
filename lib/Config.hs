@@ -1,29 +1,31 @@
 module Config where
 
 import Data.Aeson (eitherDecodeFileStrict, FromJSON)
+import Data.Text (Text)
 import GHC.Generics (Generic)
 import Logger (LogLevel)
 
 data StaticAssetPaths = StaticAssetPaths
-  { jsBundlePath :: FilePath
-  , jsSrcMapPath :: FilePath
-  , cssBundlePath :: FilePath
+  { cssBundlePath :: FilePath
   , indexPath :: FilePath
+  , jsBundlePath :: FilePath
+  , jsSrcMapPath :: FilePath
   }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
-newtype ServerConfig = ServerConfig
-  { port :: Int
+data ServerConfig = ServerConfig
+  { jwtKey :: Text
+  , port :: Int
+  , staticAssetPaths :: StaticAssetPaths
   }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
 data ApplicationConfig = ApplicationConfig
-  { staticAssetPaths :: StaticAssetPaths
-  , serverConfig :: ServerConfig
-  , databasePath :: FilePath
+  { databasePath :: FilePath
   , logLevel :: LogLevel
+  , serverConfig :: ServerConfig
   }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)

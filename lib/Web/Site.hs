@@ -29,24 +29,24 @@ siteHandler = jsBundleHandler
 
 jsBundleHandler :: Constraints r m => ServerT JsBundle m
 jsBundleHandler = do
-  path <- asks (jsBundlePath . staticAssetPaths . config)
+  path <- asks (jsBundlePath . staticAssetPaths . serverConfig . config)
   raw <- liftIO $ BS.readFile path
   pure $ decodeUtf8 raw
 
 jsSrcMapHandler :: Constraints r m => ServerT JsSrcMap m
 jsSrcMapHandler = do
-  path <- asks (jsSrcMapPath . staticAssetPaths . config)
+  path <- asks (jsSrcMapPath . staticAssetPaths . serverConfig . config)
   raw <- liftIO $ BS.readFile path
   pure $ decodeUtf8 raw
 
 cssBundleHandler :: Constraints r m => ServerT CssBundle m
 cssBundleHandler = do
-  path <- asks (cssBundlePath . staticAssetPaths . config)
+  path <- asks (cssBundlePath . staticAssetPaths . serverConfig . config)
   raw <- liftIO $ BS.readFile path
   pure $ decodeUtf8 raw
 
 indexHandler :: Constraints r m => ServerT Index m
 indexHandler _ = do
-  path <- asks (indexPath . staticAssetPaths . config)
+  path <- asks (indexPath . staticAssetPaths . serverConfig . config)
   raw <- liftIO $ BS.readFile path
   pure $ decodeUtf8 raw

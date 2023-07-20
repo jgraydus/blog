@@ -39,6 +39,7 @@ library
        cookie,
        cryptonite,
        http-media,
+       jose-jwt,
        mtl,
        resource-pool,
        servant,
@@ -53,6 +54,7 @@ library
        Logger,
        Web.Application,
     other-modules:
+       AuthToken,
        Blog,
        User,
        User.Command,

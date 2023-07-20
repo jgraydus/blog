@@ -1,13 +1,15 @@
-{ "staticAssetPaths": {
-    "jsBundlePath": "./client/build/bundle.js",
-    "jsSrcMapPath": "./client/build/bundle.js.map",
-    "cssBundlePath": "./client/build/bundle.css",
-    "indexPath": "./client/build/index.html"
-  },
-  "serverConfig": {
-    "port": 8000
-  },
+{ 
   "databasePath": "./blog.db",
-  "logLevel": "DEBUG"
+  "logLevel": "DEBUG",
+  "serverConfig": {
+    "jwtKey": "THIS IS A SECRET",
+    "port": 8000,
+    "staticAssetPaths": {
+      "cssBundlePath": "./client/build/bundle.css",
+      "indexPath": "./client/build/index.html",
+      "jsBundlePath": "./client/build/bundle.js",
+      "jsSrcMapPath": "./client/build/bundle.js.map"
+    }
+  }
 }
 
