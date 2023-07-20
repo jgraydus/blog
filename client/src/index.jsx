@@ -10,3 +10,12 @@ root.render(
   <App />
 );
 
+const socket = new WebSocket('ws://localhost:8082');
+
+socket.addEventListener('message', (event) => {
+    if (event.data === 'RELOAD') {
+        location.reload();
+    }
+    return false;
+});
+

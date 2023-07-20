@@ -1,6 +1,7 @@
 import React from 'react'
 import MarkdownEditor from './md-editor'
 import styled from 'styled-components'
+import UserWidget from './user-widget'
 
 const Root = styled.div`
   margin: 0px;
@@ -14,14 +15,18 @@ const Root = styled.div`
   font-family: sans-serif;
 `
 const Header = styled(({ className }) => (
-  <div className={className}>grayd.us</div>
+  <div className={className}>
+    <div>grayd.us</div>
+    <UserWidget />
+  </div>
 ))`
   height: 50px;
-  width: 100%;
   border: 1px solid white;
   padding: 10px;
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   font-size: 30px;
 `
 const Content = styled(({ className, children }) => (
@@ -35,7 +40,6 @@ const Footer = styled(({ className }) => (
   <div className={className}>footer</div>
 ))`
   height: 50px;
-  width: 100%;
   border: 1px solid white;
   padding: 10px;
   display: flex;
