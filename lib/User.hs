@@ -11,6 +11,7 @@ import User.Query qualified as Query
 
 class Monad m => UserQuery m where
   findUserById :: UserId -> m (Maybe User)
+  findUserByEmailAddress :: EmailAddress -> m (Maybe User)
   findUserByCredentials :: EmailAddress -> PasswordHash -> m (Maybe User)
   computePasswordHash :: EmailAddress -> Password -> m PasswordHash
 
@@ -21,6 +22,9 @@ class Monad m => UserCommand m where
 instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => UserQuery m where
   findUserById userId =
     withConnM $ \conn -> Query.findUserById conn userId
+
+  findUserByEmailAddress emailAddress =
+    withConnM $ \conn -> Query.findUserByEmailAddress conn emailAddress
 
   findUserByCredentials emailAddress passwordHash =
     withConnM $ \conn -> Query.findUserByCredentials conn emailAddress passwordHash

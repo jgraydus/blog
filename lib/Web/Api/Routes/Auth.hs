@@ -4,23 +4,27 @@ module Web.Api.Routes.Auth (
 
 import AuthToken
 import Data.Aeson (FromJSON)
+import Data.Maybe (fromJust)
+import Data.Time (UTCTime)
+import Data.Time.Format.ISO8601 (iso8601ParseM)
 import GHC.Generics (Generic)
 import Servant
 import User
 import User.Model
-import Web.Cookie (SetCookie)
+import Web.Cookie
 import Web.RouteHandler
 
-type AuthApi = LogIn
+type AuthApi = LogIn :<|> SignUp :<|> LogOut
 
 authApiHandler :: RouteHandler AuthApi
-authApiHandler = logInHandler
+authApiHandler = logInHandler :<|> signUpHandler :<|> logOutHandler
 
 -------------------------------------------------------------------------------------------
 -- POST /login
 
 type LogIn =
-     ReqBody '[JSON] LogInReqBody
+     "login"
+  :> ReqBody '[JSON] LogInReqBody
   :> Post '[JSON] (Headers '[Header "Set-Cookie" SetCookie] User)
 
 data LogInReqBody = LogInReqBody
@@ -31,7 +35,7 @@ data LogInReqBody = LogInReqBody
   deriving anyclass (FromJSON)
 
 logInHandler :: RouteHandler LogIn
-logInHandler LogInReqBody {..} = do
+logInHandler LogInReqBody { emailAddress, password } = do
   passwordHash <- computePasswordHash emailAddress password
   userMaybe <- findUserByCredentials emailAddress passwordHash
   case userMaybe of
@@ -39,4 +43,52 @@ logInHandler LogInReqBody {..} = do
     Just user -> do
       cookie <- makeAuthTokenCookie user
       pure $ addHeader cookie user
+
+-------------------------------------------------------------------------------------------
+-- POST /signup
+
+type SignUp =
+     "signup"
+  :> ReqBody '[JSON] SignUpReqBody
+  :> Post '[JSON] (Headers '[Header "Set-Cookie" SetCookie] User)
+
+data SignUpReqBody = SignUpReqBody
+  { emailAddress :: EmailAddress
+  , password :: Password
+  }
+  deriving stock (Generic)
+  deriving anyclass (FromJSON)
+
+signUpHandler :: RouteHandler SignUp
+signUpHandler SignUpReqBody { emailAddress, password } = do
+  passwordHash <- computePasswordHash emailAddress password
+  userMaybe <- createUser emailAddress passwordHash
+  case userMaybe of
+    Nothing -> throwError err403
+    Just user -> do
+      cookie <- makeAuthTokenCookie user
+      pure $ addHeader cookie user
+
+-------------------------------------------------------------------------------------------
+-- POST /logout
+
+type LogOut =
+       "logout"
+    :> Post '[JSON] (Headers '[Header "Set-Cookie" SetCookie] ())
+
+expiration :: UTCTime
+expiration = fromJust $ iso8601ParseM "1970-01-01T00:00:00.000Z"
+
+logOutHandler :: RouteHandler LogOut
+logOutHandler = pure $ addHeader cookie ()
+  where
+    cookie :: SetCookie
+    cookie = defaultSetCookie
+             { setCookieName = "authorization"
+             , setCookieValue = ""
+             , setCookieHttpOnly = True
+             , setCookieSameSite = Just sameSiteStrict
+             , setCookieExpires = Just expiration
+             -- TODO , setCookieSecure = True
+             }
 
