@@ -4,25 +4,25 @@ import Config (ApplicationConfig)
 import Control.Monad.Except (ExceptT)
 import Control.Monad.Reader (ReaderT, runReaderT)
 import Data.UUID (toText)
-import Data.UUID.V4 (nextRandom)
+import DbConnPool (DbConnPool)
 import Logger
 import Network.Wai
 import Servant
 import System.Clock
 import Web.Api
-import Web.RequestContext
+import Web.RequestContext (makeRequestId, RequestContext(..))
 import Web.Site
 
 p :: Proxy (Api :<|> Site)
 p = Proxy
 
-app :: Logger -> ApplicationConfig -> Application
-app logger' config req res = do
+app :: ApplicationConfig -> Logger -> DbConnPool -> Application
+app config logger' dbConnPool req res = do
   startTime <- getTime Monotonic
 
-  requestId <- nextRandom
+  requestId <- makeRequestId
   let logger logLevel msg = logger' logLevel ("[requestId=" <> toLogStr (toText requestId) <> "]" <> msg)
-      reqCtx = RequestContext { requestId, config, logger }
+      reqCtx = RequestContext { config, dbConnPool, logger, requestId }
       ctx :: Context '[RequestContext] = reqCtx :. EmptyContext
       nt :: ReaderT RequestContext (ExceptT ServerError IO) x -> Handler x
       nt m = Handler (runReaderT m reqCtx)

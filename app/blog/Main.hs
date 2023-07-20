@@ -2,6 +2,7 @@ module Main where
 
 import CommandLineArgs (CommandLineArgs(..), parseCommandLineArgs)
 import Config (ApplicationConfig(..), loadConfig, ServerConfig(..))
+import DbConnPool (createDbConnPool)
 import Logger
 import Network.Wai.Handler.Warp qualified as Warp
 import System.Exit (exitFailure)
@@ -18,11 +19,13 @@ main = do
       putStrLn err
       exitFailure
 
-    Right config@ApplicationConfig { logLevel, serverConfig } -> do
+    Right config@ApplicationConfig { databasePath, logLevel, serverConfig } -> do
       let ServerConfig { port } = serverConfig
       withLogger logLevel $ \logger -> do
-        logger DEBUG (toLogStr . show $ config)
-        logger INFO $ "server listenting on port " <> toLogStr port
+        dbConnPool <- createDbConnPool databasePath
 
-        Warp.run port (app logger config)
+        logger DEBUG (toLogStr . show $ config)
+        logger INFO $ "server listening on port " <> toLogStr port
+
+        Warp.run port (app config logger dbConnPool)
 
