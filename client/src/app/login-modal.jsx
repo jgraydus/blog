@@ -1,4 +1,5 @@
 import React from 'react'
+import { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { Button, Input, Modal, Spacer } from 'components'
 
@@ -26,6 +27,17 @@ const CloseButton = styled(({ className, close }) => {
     }
 `
 export default styled(({ className, close, isOpen }) => {
+  const keypressHandler = useCallback(evt => {
+    if (evt.key === "Enter") {
+      console.log('submit')
+    }
+  }, [])
+
+  useEffect(() => {
+      window.addEventListener('keypress', keypressHandler, false);
+      return () => window.removeEventListener('keypress', keypressHandler, false);
+  }, [keypressHandler])
+
   return (
     <Modal isOpen={isOpen}>
       <div className={className}>
