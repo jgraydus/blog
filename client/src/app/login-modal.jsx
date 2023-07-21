@@ -1,7 +1,8 @@
 import React from 'react'
-import { useCallback, useEffect } from 'react'
+import axios from 'axios'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Button, Input, Modal, Spacer } from 'components'
+import { Button, Input, Modal, Spacer, Spinner } from 'components'
 
 const CloseButton = styled(({ className, close }) => {
     return <div className={className} onClick={close}>X</div>
@@ -26,12 +27,38 @@ const CloseButton = styled(({ className, close }) => {
         background-color: #111;
     }
 `
-export default styled(({ className, close, isOpen }) => {
+export default styled(({ className, close, isOpen, setUser }) => {
+  const [msg, setMsg] = useState(null)
+  const [emailAddress, setEmailAddress] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const submit = useCallback(() => {
+      if (!emailAddress || !password) { return }
+      setMsg('')
+      setLoading(true);
+      axios.post('/api/login', { emailAddress, password }).then(response => {
+        setUser(response.data)
+        setLoading(false)
+        setEmailAddress('')
+        setPassword('')
+        close()
+      }).catch(e => {
+        const status = e.response.status
+        if (status === 403) {
+          setMsg('incorrect credentials')
+        } else {
+          setMsg(e.message)
+        }
+        setLoading(false)
+      })
+  }, [emailAddress, password])
+
   const keypressHandler = useCallback(evt => {
     if (evt.key === "Enter") {
-      console.log('submit')
+        submit()
     }
-  }, [])
+  }, [submit])
 
   useEffect(() => {
       window.addEventListener('keypress', keypressHandler, false);
@@ -41,19 +68,36 @@ export default styled(({ className, close, isOpen }) => {
   return (
     <Modal isOpen={isOpen}>
       <div className={className}>
-        <CloseButton close={close} />
-        <div id="title">Log In</div>
-        <Spacer height={20} />
-        <div id="inputs">
-          <Input label="email address" />
-          <Input label="password" />
+      {loading ? (
+        <div id="loading">
+          <Spinner />
         </div>
-        <Spacer height={20} />
-        <div id="controls">
-          <Button>Submit</Button>
-          <Spacer width={10} />
-          <Button onClick={close}>Cancel</Button>
-        </div>
+      ) : (
+        <>
+          <CloseButton close={close} />
+          <div id="title">Log In</div>
+          <Spacer height={20} />
+          <div id="inputs">
+            <Input
+              label="email address"
+              value={emailAddress}
+              onChange={evt => setEmailAddress(evt.target.value)}
+            />
+            <Input
+              label="password"
+              value={password}
+              onChange={evt => setPassword(evt.target.value)}
+            />
+          </div>
+          <Spacer height={20} />
+          <div id="controls">
+            <Button onClick={submit} disabled={!emailAddress || !password}>Submit</Button>
+            <Spacer width={10} />
+            <Button onClick={close}>Cancel</Button>
+          </div>
+          {msg && <div id="msg">{msg}</div>}
+        </>
+      )}
       </div>
     </Modal>
   )
@@ -77,6 +121,20 @@ export default styled(({ className, close, isOpen }) => {
     display: flex;
     flex-direction: row;
     justify-content: right;
+  }
+  #msg {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    color: red;
+    font-size: 12px;
+  }
+  #loading {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `
 

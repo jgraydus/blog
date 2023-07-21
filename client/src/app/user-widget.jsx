@@ -13,12 +13,12 @@ const Root = styled.div`
       &:hover { color: #AAA; }
     }
 `
-export default ({ openLogInModal }) => {
+export default ({ logOut, openLogInModal, user }) => {
   return (
     <Root>
-      <div id="link" onClick={openLogInModal}>{'Log In'}</div>
-      <Spacer width={20} />
-      <div id="link">{'Register'}</div>
+    {!!user
+      ? <div id="link" onClick={logOut}>{'Log Out'}</div>
+      : <div id="link" onClick={openLogInModal}>{'Log In'}</div>}
     </Root>
   )
 }

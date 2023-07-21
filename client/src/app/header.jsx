@@ -2,10 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import UserWidget from './user-widget'
 
-export default styled(({ className, openLogInModal }) => (
+export default styled(({ className, logOut, openLogInModal, user }) => (
   <div className={className}>
     <div id="title">grayd.us</div>
-    <UserWidget openLogInModal={openLogInModal} />
+    <UserWidget logOut={logOut} openLogInModal={openLogInModal} user={user} />
   </div>
 ))`
   height: 50px;

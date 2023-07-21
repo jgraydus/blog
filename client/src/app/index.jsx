@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import { useState } from 'react'
 import styled from 'styled-components'
 import Footer from './footer'
@@ -27,13 +28,25 @@ const Content = styled(({ className, children }) => (
 `
 export default () => {
   const [logInModalIsOpen, setLogInModalIsOpen] = useState(false)
+  const [user, setUser] = useState(null)
 
   return (
     <Viewport>
-      <Header openLogInModal={() => setLogInModalIsOpen(true)}/>
+      <Header
+        logOut={() => {
+          axios.post('/api/logout')
+          setUser(null)
+        }}
+        openLogInModal={() => setLogInModalIsOpen(true)}
+        user={user}
+      />
       <Content>
         {/* TODO */}
-        <LogInModal close={() => setLogInModalIsOpen(false)} isOpen={logInModalIsOpen} />
+        <LogInModal
+          close={() => setLogInModalIsOpen(false)}
+          isOpen={logInModalIsOpen}
+          setUser={setUser}
+        />
       </Content>
       <Footer />
     </Viewport>
