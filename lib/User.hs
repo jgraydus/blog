@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module User where
+module User (
+    UserQuery(..),
+    UserCommand(..),
+    module User.Model
+) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Reader (MonadReader)

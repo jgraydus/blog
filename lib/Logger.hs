@@ -13,7 +13,7 @@ import Prelude hiding (log)
 import System.Log.FastLogger
 
 data LogLevel = TRACE | DEBUG | INFO | WARN | ERROR
-  deriving stock (Generic, Eq, Ord, Show)
+  deriving stock (Generic, Eq, Ord, Read, Show)
   deriving anyclass (FromJSON)
 
 instance ToLogStr LogLevel where

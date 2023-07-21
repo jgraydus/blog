@@ -10,7 +10,6 @@ import Data.Time.Format.ISO8601 (iso8601ParseM)
 import GHC.Generics (Generic)
 import Servant
 import User
-import User.Model
 import Web.Cookie
 import Web.RouteHandler
 

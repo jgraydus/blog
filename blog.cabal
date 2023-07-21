@@ -33,42 +33,42 @@ library
     import: shared-properties
     hs-source-dirs:   lib
     build-depends:
-       aeson,
-       base64,
-       bytestring,
-       clock,
-       cookie,
-       cryptonite,
-       http-media,
-       jose-jwt,
-       mtl,
-       resource-pool,
-       servant,
-       servant-server,
-       sqlite-simple,
-       text,
-       time,
-       uuid,
+        aeson,
+        base64,
+        bytestring,
+        clock,
+        cookie,
+        cryptonite,
+        http-media,
+        jose-jwt,
+        mtl,
+        resource-pool,
+        servant,
+        servant-server,
+        sqlite-simple,
+        text,
+        time,
+        uuid,
     exposed-modules:
-       Config,
-       DbConnPool,
-       Logger,
-       Web.Application,
+        Config,
+        DbConnPool,
+        Logger,
+        User,
+        Web.Application,
     other-modules:
-       AuthToken,
-       Blog,
-       User,
-       User.Command,
-       User.Model,
-       User.Query,
-       Web.Api,
-       Web.Api.Routes.Auth,
-       Web.Api.Routes.Blog,
-       Web.Api.Routes.User,
-       Web.ContentTypes,
-       Web.Site,
-       Web.RequestContext,
-       Web.RouteHandler
+        AuthToken,
+        Blog,
+        User.Command,
+        User.Model,
+        User.Query,
+        Web.Api,
+        Web.Api.Routes.Auth,
+        Web.Api.Routes.Blog,
+        Web.Api.Routes.User,
+        Web.ContentTypes,
+        Web.Site,
+        Web.RequestContext,
+        Web.RouteHandler
 
 executable blog
     import: shared-properties
@@ -96,4 +96,22 @@ executable dev-server
     build-depends:
         dev-server,
 
+executable make-user
+    import: shared-properties
+    hs-source-dirs:   app/make-user
+    main-is:          Main.hs
+    ghc-options:
+        -threaded
+        -rtsopts
+        -with-rtsopts=-N
+    build-depends:
+        blog,
+        dev-server,
+        mtl,
+        optparse-applicative,
+        optparse-text,
+        sqlite-simple,
+        text,
+    other-modules:
+        CommandLineArgs,
 

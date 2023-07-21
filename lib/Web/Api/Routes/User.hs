@@ -6,7 +6,6 @@ import Data.Aeson (FromJSON)
 import GHC.Generics (Generic)
 import Servant
 import User
-import User.Model
 import Web.RouteHandler
 
 type UserApi =
