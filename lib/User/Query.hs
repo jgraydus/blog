@@ -4,6 +4,7 @@ module User.Query (
 
 import Crypto.Error (throwCryptoErrorIO)
 import Crypto.KDF.Argon2 qualified as Argon2
+import Data.ByteString.Base64 (encodeBase64)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 import Database.SQLite.Simple (Connection, Only(..), query)
 import User.Model
@@ -36,5 +37,5 @@ computePasswordHash emailAddress password = do
       salt = encodeUtf8 $ emailAddress <> "who's a salty pirate? arrrrrrrrrrrrrrrr"
       opts = Argon2.defaultOptions
       result = Argon2.hash opts p salt 128
-  throwCryptoErrorIO result
+  encodeBase64 <$> throwCryptoErrorIO result
 

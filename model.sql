@@ -1,7 +1,7 @@
 CREATE TABLE users (
   user_id         INTEGER PRIMARY KEY,
   email_address   TEXT NOT NULL,
-  password_hash   BLOB
+  password_hash   TEXT
 );
 
 CREATE TABLE blog_entries (
