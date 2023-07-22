@@ -28,7 +28,6 @@ const Content = styled(({ className, children }) => (
 ))`
   height: 100%;
   width: 100%;
-  padding: 10px;
 `
 export default () => {
   const [loading, setLoading] = useState(true)
