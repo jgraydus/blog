@@ -1,4 +1,5 @@
 export { default as Button } from './button'
+export { default as InlineEdit } from './inline-edit'
 export { default as Input } from './input'
 export { default as MdEditor } from './md-editor'
 export { default as Modal } from './modal'
