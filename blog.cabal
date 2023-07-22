@@ -58,6 +58,9 @@ library
     other-modules:
         AuthToken,
         Blog,
+        Blog.Command,
+        Blog.Model,
+        Blog.Query,
         User.Command,
         User.Model,
         User.Query,
@@ -65,10 +68,12 @@ library
         Web.Api.Routes.Auth,
         Web.Api.Routes.Blog,
         Web.Api.Routes.User,
+        Web.Auth,
         Web.ContentTypes,
         Web.Site,
         Web.RequestContext,
-        Web.RouteHandler
+        Web.RouteHandler,
+        Web.Util,
 
 executable blog
     import: shared-properties

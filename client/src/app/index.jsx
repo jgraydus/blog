@@ -1,7 +1,11 @@
 import React from 'react'
 import axios from 'axios'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import styled from 'styled-components'
+import { Spinner } from 'components'
+import Entry from './entry'
+import EntriesList from './entries-list'
 import Footer from './footer'
 import Header from './header'
 import LogInModal from './login-modal'
@@ -27,8 +31,25 @@ const Content = styled(({ className, children }) => (
   padding: 10px;
 `
 export default () => {
+  const [loading, setLoading] = useState(true)
   const [logInModalIsOpen, setLogInModalIsOpen] = useState(false)
   const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // if we already have the auth token cookie, then we can just get the user data
+    axios.post('/api/me').then(x => {
+      setUser(x.data)
+      setLoading(false)
+    }).catch(e => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <Viewport>
+        <Spinner />
+      </Viewport>
+    )
+  }
 
   return (
     <Viewport>
@@ -41,7 +62,10 @@ export default () => {
         user={user}
       />
       <Content>
-        {/* TODO */}
+        <Routes>
+          <Route path="/" element={<EntriesList user={user} />} />
+          <Route path=":entryId" element={<Entry user={user} />} />
+        </Routes>
         <LogInModal
           close={() => setLogInModalIsOpen(false)}
           isOpen={logInModalIsOpen}

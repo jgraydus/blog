@@ -10,13 +10,15 @@ import Data.Time.Format.ISO8601 (iso8601ParseM)
 import GHC.Generics (Generic)
 import Servant
 import User
+import Web.Auth
 import Web.Cookie
 import Web.RouteHandler
+import Web.Util
 
-type AuthApi = LogIn :<|> SignUp :<|> LogOut
+type AuthApi = LogIn :<|> Me :<|> SignUp :<|> LogOut
 
 authApiHandler :: RouteHandler AuthApi
-authApiHandler = logInHandler :<|> signUpHandler :<|> logOutHandler
+authApiHandler = logInHandler :<|> meHandler :<|> signUpHandler :<|> logOutHandler
 
 -------------------------------------------------------------------------------------------
 -- POST /login
@@ -42,6 +44,14 @@ logInHandler LogInReqBody { emailAddress, password } = do
     Just user -> do
       cookie <- makeAuthTokenCookie user
       pure $ addHeader cookie user
+
+-------------------------------------------------------------------------------------------
+-- POST /mea
+
+type Me = Auth :> "me" :> Post '[JSON] User
+
+meHandler :: RouteHandler Me
+meHandler userId = findUserById userId >>= orNotFound
 
 -------------------------------------------------------------------------------------------
 -- POST /signup

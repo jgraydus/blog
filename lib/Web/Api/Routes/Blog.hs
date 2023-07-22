@@ -2,15 +2,14 @@ module Web.Api.Routes.Blog (
     BlogApi, blogApiHandler
 ) where
 
+import Blog
+import Control.Monad (when)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Int (Int64)
-import Data.Time (UTCTime)
-import Data.Text (Text)
 import GHC.Generics (Generic)
 import Servant
+import Web.Auth
 import Web.RouteHandler
-
-type EntryId = Int64
+import Web.Util
 
 type BlogApi =
   "entries" :> (
@@ -31,10 +30,10 @@ blogApiHandler =
 -- GET /entries
 
 data EntryDesc = EntryDesc
-  { entryId :: EntryId
-  , title :: Text
-  , date :: UTCTime
-  , isPublished :: Bool
+  { blogEntryId :: BlogEntryId
+  , title :: BlogEntryTitle
+  , publishDate :: PublishDate
+  , isPublished :: IsPublished
   }
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON)
@@ -42,56 +41,44 @@ data EntryDesc = EntryDesc
 type GetEntries = Get '[JSON] [EntryDesc]
 
 getEntriesHandler :: RouteHandler GetEntries
-getEntriesHandler = pure []
+getEntriesHandler = do
+  results <- findBlogEntries
+  pure $ fmap (\BlogEntry {..} -> EntryDesc {..}) results
 
 -------------------------------------------------------------------------------------------
 -- GET /entries/:entryId
 
-data Entry = Entry
-  { entryId :: EntryId
-  , title :: Text
-  , date :: UTCTime
-  , contents :: Text
-  }
-  deriving stock (Generic, Show)
-  deriving anyclass (ToJSON)
-
-type GetEntry = Capture "entryId" EntryId :> Get '[JSON] Entry
+type GetEntry = Capture "entryId" BlogEntryId :> Get '[JSON] BlogEntry
 
 getEntryHandler :: RouteHandler GetEntry
-getEntryHandler = undefined
+getEntryHandler blogEntryId = findBlogEntryById blogEntryId >>= orNotFound
 
 -------------------------------------------------------------------------------------------
 -- POST /entries
 
-type CreateEntry = ReqBody '[JSON] CreateEntryReqBody :> Post '[JSON] EntryId
-
-data CreateEntryReqBody = CreateEntryReqBody
-  { title :: Text
-  , contents :: Text
-  , date :: UTCTime
-  }
-  deriving stock (Generic, Show)
-  deriving anyclass (FromJSON)
+type CreateEntry = Auth :> Post '[JSON] BlogEntry
 
 createEntryHandler :: RouteHandler CreateEntry
-createEntryHandler = undefined
+createEntryHandler userId = createBlogEntry userId >>= orThrowError err500
 
 -------------------------------------------------------------------------------------------
 -- PATCH /entries/:entryId
 
-type UpdateEntry = ReqBody '[JSON] UpdateEntryReqBody :> Patch '[JSON] ()
+type UpdateEntry = Auth :> ReqBody '[JSON] UpdateEntryReqBody :> Patch '[JSON] BlogEntry
 
 data UpdateEntryReqBody = UpdateEntryReqBody
-  { entryId :: EntryId
-  , title :: Maybe Text
-  , contents :: Maybe Text
-  , date :: Maybe UTCTime
-  , isPublished :: Maybe Bool
+  { blogEntryId :: BlogEntryId
+  , title :: Maybe BlogEntryTitle
+  , content :: Maybe BlogEntryContent
+  , publishDate :: Maybe PublishDate
+  , isPublished :: Maybe IsPublished
   }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
 updateEntryHandler :: RouteHandler UpdateEntry
-updateEntryHandler = undefined
+updateEntryHandler userId' UpdateEntryReqBody {..} = do
+  BlogEntry {userId} <- findBlogEntryById blogEntryId >>= orNotFound
+  when (userId /= userId') (throwError err403)
+  updateBlogEntry blogEntryId title content publishDate isPublished >>= orThrowError err500
 

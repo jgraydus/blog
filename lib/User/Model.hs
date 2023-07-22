@@ -1,6 +1,6 @@
 module User.Model where
 
-import Data.Aeson (ToJSON)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int64)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -15,5 +15,5 @@ data User = User
   , emailAddress :: EmailAddress
   }
   deriving stock (Generic, Show)
-  deriving anyclass (ToJSON)
+  deriving anyclass (FromJSON, ToJSON)
 

@@ -1,34 +1,35 @@
-module Blog where
+{-# LANGUAGE UndecidableInstances #-}
+module Blog (
+    BlogCommand(..), BlogQuery(..),
+    module Blog.Model
+) where
 
-import Data.Aeson (ToJSON)
-import Data.Int (Int64)
-import Data.Text (Text)
-import Data.Time (UTCTime)
-import GHC.Generics (Generic)
+import Blog.Command qualified as Command
+import Blog.Model
+import Blog.Query qualified as Query
+import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Reader (MonadReader)
+import DbConnPool (DbConnPool, withConnM)
+import GHC.Records (HasField)
 import User.Model (UserId)
 
-type BlogEntryId = Int64
-type BlogEntryTitle = Text
-type BlogEntryContent = Text
-type PublishDate = UTCTime
-type IsPublished = Bool
-
-data BlogEntry = BlogEntry
-  { blogEntryId :: BlogEntryId
-  , title :: BlogEntryTitle
-  , content :: BlogEntryContent
-  , date :: PublishDate
-  , isPublished :: IsPublished
-  , userId :: UserId
-  }
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
-
 class Monad m => BlogQuery m where
+  findBlogEntries :: m [BlogEntry]
   findBlogEntryById :: BlogEntryId -> m (Maybe BlogEntry)
-  findBlogEntriesByUserId :: UserId -> m [BlogEntry]
 
 class Monad m => BlogCommand m where
-  createBlogEntry :: UserId -> BlogEntryTitle -> BlogEntryContent -> m (Maybe BlogEntry)
+  createBlogEntry :: UserId -> m (Maybe BlogEntry)
   updateBlogEntry :: BlogEntryId -> Maybe BlogEntryTitle -> Maybe BlogEntryContent -> Maybe PublishDate -> Maybe IsPublished -> m (Maybe BlogEntry)
+
+instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => BlogQuery m where
+  findBlogEntries =
+    withConnM Query.findBlogEntries
+  findBlogEntryById blogEntryId =
+    withConnM $ \conn -> Query.findBlogEntryById conn blogEntryId
+
+instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => BlogCommand m where
+  createBlogEntry userId =
+    withConnM $ \conn -> Command.createBlogEntry conn userId
+  updateBlogEntry blogEntryId title content publishDate isPublished =
+    withConnM $ \conn -> Command.updateBlogEntry conn blogEntryId title content publishDate isPublished
 
