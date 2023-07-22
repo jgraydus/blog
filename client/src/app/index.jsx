@@ -64,7 +64,7 @@ export default () => {
       <Content>
         <Routes>
           <Route path="/" element={<EntriesList user={user} />} />
-          <Route path=":entryId" element={<Entry user={user} />} />
+          <Route path=":blogEntryId" element={<Entry user={user} />} />
         </Routes>
         <LogInModal
           close={() => setLogInModalIsOpen(false)}
