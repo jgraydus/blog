@@ -54,7 +54,7 @@ const Edit = ({ onSubmit, value }) => {
     )
 }
 
-const InlineEdit = ({ disabled = false, onSubmit, value }) => {
+const InlineEdit = ({ disabled = false, onSubmit, placeholder, value }) => {
     const [mode, setMode] = useState(Mode.View);
 
     const setEdit = useCallback(evt => {
@@ -70,7 +70,7 @@ const InlineEdit = ({ disabled = false, onSubmit, value }) => {
     }, [setMode])
 
     return mode === Mode.View
-        ? <View value={value} onClick={setEdit} />
+        ? <View value={value || placeholder} onClick={setEdit} />
         : <Edit value={value} onSubmit={setView} />
 }
 

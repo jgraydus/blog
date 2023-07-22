@@ -64,11 +64,14 @@ createEntryHandler userId = createBlogEntry userId >>= orThrowError err500
 -------------------------------------------------------------------------------------------
 -- PATCH /entries/:entryId
 
-type UpdateEntry = Auth :> ReqBody '[JSON] UpdateEntryReqBody :> Patch '[JSON] BlogEntry
+type UpdateEntry =
+     Auth
+  :> Capture "blogEntryId" BlogEntryId
+  :> ReqBody '[JSON] UpdateEntryReqBody
+  :> Patch '[JSON] BlogEntry
 
 data UpdateEntryReqBody = UpdateEntryReqBody
-  { blogEntryId :: BlogEntryId
-  , title :: Maybe BlogEntryTitle
+  { title :: Maybe BlogEntryTitle
   , content :: Maybe BlogEntryContent
   , publishDate :: Maybe PublishDate
   , isPublished :: Maybe IsPublished
@@ -77,7 +80,7 @@ data UpdateEntryReqBody = UpdateEntryReqBody
   deriving anyclass (FromJSON)
 
 updateEntryHandler :: RouteHandler UpdateEntry
-updateEntryHandler userId' UpdateEntryReqBody {..} = do
+updateEntryHandler userId' blogEntryId UpdateEntryReqBody {..} = do
   BlogEntry {userId} <- findBlogEntryById blogEntryId >>= orNotFound
   when (userId /= userId') (throwError err403)
   updateBlogEntry blogEntryId title content publishDate isPublished >>= orThrowError err500

@@ -39,7 +39,7 @@ updateBlogEntry conn blogEntryId title content publishDate isPublished = withTra
   for_ isPublished $ \val -> execute conn "UPDATE blog_entries SET is_published=? WHERE blog_entry_id=?" (val, blogEntryId)
 
   entry :: [(BlogEntryId, UserId, BlogEntryTitle, BlogEntryContent, PublishDate, IsPublished)] <-
-    query conn "SELECT (blog_entry_id, user_id, title, content, publish_date, is_published) \
+    query conn "SELECT blog_entry_id, user_id, title, content, publish_date, is_published \
                \FROM blog_entries \
                \WHERE blog_entry_id=?"
                (Only blogEntryId)

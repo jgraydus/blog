@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, InlineEdit, Spacer, Spinner } from 'components'
@@ -20,6 +20,11 @@ export default styled(({ className, user }) => {
     })
   }, [])
 
+  const changeTitle = useCallback(title => {
+    setEntry({ ...entry, title })
+    axios.patch(`/api/entries/${entry.blogEntryId}`, { title })
+  }, [entry])
+
   if (loading) {
     return <Spinner />
   }
@@ -32,7 +37,11 @@ export default styled(({ className, user }) => {
         <span id="date">{new Date(entry.publishDate).toString().substring(0, 15)}</span>
         <Spacer width={20} />
         <span id="title">
-          <InlineEdit onSubmit={() => {}} value={entry.title || '--- no title ---'} />
+          <InlineEdit
+            onSubmit={changeTitle}
+            value={entry.title}
+            placeholder={'--- no title ---'}
+          />
         </span>
         {user && <PublishButton entry={entry}/>}
       </div>
@@ -62,6 +71,7 @@ export default styled(({ className, user }) => {
     height: 100%;
     width: 100%;
     border: 1px solid white;
+    border-bottom: 0px;
   }
 `
 
