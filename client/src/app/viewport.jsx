@@ -30,6 +30,9 @@ const Viewport = styled.div`
           cursor: pointer;
       }
     }
+
+  code * { font-family: monospace; }
+  textarea { font-family: monospace; }
 `
 
 export default Viewport
