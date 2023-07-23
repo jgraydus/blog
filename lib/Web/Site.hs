@@ -27,26 +27,21 @@ siteHandler = jsBundleHandler
   :<|> cssBundleHandler
   :<|> indexHandler
 
-jsBundleHandler :: Constraints r m => ServerT JsBundle m
-jsBundleHandler = do
-  path <- asks (jsBundlePath . staticAssetPaths . serverConfig . config)
+serveStaticAsset :: Constraints r m => (StaticAssetPaths -> FilePath) -> m Text
+serveStaticAsset pathGetter = do
+  path <- asks (pathGetter . staticAssetPaths . serverConfig . config)
   raw <- liftIO $ BS.readFile path
   pure $ decodeUtf8 raw
+
+jsBundleHandler :: Constraints r m => ServerT JsBundle m
+jsBundleHandler = serveStaticAsset jsBundlePath
 
 jsSrcMapHandler :: Constraints r m => ServerT JsSrcMap m
-jsSrcMapHandler = do
-  path <- asks (jsSrcMapPath . staticAssetPaths . serverConfig . config)
-  raw <- liftIO $ BS.readFile path
-  pure $ decodeUtf8 raw
+jsSrcMapHandler = serveStaticAsset jsSrcMapPath
 
 cssBundleHandler :: Constraints r m => ServerT CssBundle m
-cssBundleHandler = do
-  path <- asks (cssBundlePath . staticAssetPaths . serverConfig . config)
-  raw <- liftIO $ BS.readFile path
-  pure $ decodeUtf8 raw
+cssBundleHandler = serveStaticAsset cssBundlePath
 
 indexHandler :: Constraints r m => ServerT Index m
-indexHandler _ = do
-  path <- asks (indexPath . staticAssetPaths . serverConfig . config)
-  raw <- liftIO $ BS.readFile path
-  pure $ decodeUtf8 raw
+indexHandler _ = serveStaticAsset indexPath
+
