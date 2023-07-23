@@ -1,5 +1,5 @@
 module DbConnPool (
-   createDbConnPool, DbConnPool, withConn, withConnM
+   createDbConnPool, DbConnPool, HasDbConnPool(..), withConn, withConnM
 ) where
 
 import Control.Concurrent (getNumCapabilities)
@@ -25,8 +25,14 @@ createDbConnPool dbFilePath = do
 withConn :: DbConnPool -> (Connection -> IO a) -> IO a
 withConn (DbConnPool pool) = withResource pool
 
-withConnM :: (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => (Connection -> IO a) -> m a
+class HasDbConnPool a where
+  getDbConnPool :: a -> DbConnPool
+
+instance HasDbConnPool DbConnPool where
+  getDbConnPool = id
+
+withConnM :: (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => (Connection -> IO a) -> m a
 withConnM action = do
-  pool <- asks (getField @"dbConnPool")
+  pool <- asks getDbConnPool
   liftIO $ withConn pool action
 

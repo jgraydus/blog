@@ -7,8 +7,7 @@ module User (
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Reader (MonadReader)
-import DbConnPool (DbConnPool, withConnM)
-import GHC.Records (HasField)
+import DbConnPool (HasDbConnPool, withConnM)
 import User.Command qualified as Command
 import User.Model
 import User.Query qualified as Query
@@ -23,7 +22,7 @@ class Monad m => UserCommand m where
   createUser :: EmailAddress -> PasswordHash -> m (Maybe User)
   updateUser :: UserId -> Maybe PasswordHash -> m (Maybe User)
 
-instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => UserQuery m where
+instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => UserQuery m where
   findUserById userId =
     withConnM $ \conn -> Query.findUserById conn userId
 
@@ -35,7 +34,7 @@ instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPoo
 
   computePasswordHash emailAddress password = liftIO $ Query.computePasswordHash emailAddress password
 
-instance (Monad m, MonadIO m, MonadReader r m, HasField "dbConnPool" r DbConnPool) => UserCommand m where
+instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => UserCommand m where
   createUser emailAddress passwordHash =
     withConnM $ \conn -> Command.createUser conn emailAddress passwordHash
 

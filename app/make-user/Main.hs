@@ -3,12 +3,10 @@ module Main where
 import CommandLineArgs
 import Control.Monad.Reader (runReaderT)
 import Data.IORef
-import DbConnPool (createDbConnPool, DbConnPool)
+import DbConnPool (createDbConnPool)
 import Logger
 import System.Exit (exitFailure, exitSuccess)
 import User
-
-newtype ExeCtx = ExeCtx { dbConnPool :: DbConnPool }
 
 main :: IO ()
 main = do
@@ -21,7 +19,7 @@ main = do
 
     dbConnPool <- createDbConnPool databaseFilePath
 
-    userMaybe <- flip runReaderT (ExeCtx dbConnPool) $ do
+    userMaybe <- flip runReaderT dbConnPool $ do
       passwordHash <- computePasswordHash emailAddress password
       createUser emailAddress passwordHash
 

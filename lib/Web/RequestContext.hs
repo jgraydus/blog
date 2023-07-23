@@ -5,7 +5,7 @@ module Web.RequestContext (
 import Config
 import Data.UUID (UUID)
 import Data.UUID.V4 (nextRandom)
-import DbConnPool (DbConnPool)
+import DbConnPool (DbConnPool, HasDbConnPool(..))
 import Logger
 
 makeRequestId :: IO UUID
@@ -18,3 +18,5 @@ data RequestContext = RequestContext
   , requestId :: UUID
   }
 
+instance HasDbConnPool RequestContext where
+  getDbConnPool = dbConnPool
