@@ -74,14 +74,17 @@ export default ({ user }) => {
 
   useEffect(() => {
     axios.get('/api/entries').then(x => {
-      const entries = x.data
+      const entries = R.sortWith([
+        R.descend(R.prop('publishDate')),
+        R.ascend(R.prop('blogEntryId'))
+      ], x.data)
       setEntries(entries)
       setLoading(false)
     })
   }, [user])
 
   const addEntry = useCallback(entry => {
-    setEntries([...entries, entry])
+    setEntries([entry, ...entries])
   }, [entries])
 
   return (
