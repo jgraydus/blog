@@ -42,7 +42,8 @@ const HeaderRow = styled(({ addEntry, className, user }) => (
   </div>
 ))`
   width: 100%;
-  height: 30px;
+  height: 40px;
+  font-weight: 700;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -54,18 +55,19 @@ const Row = styled(({ className, entry }) => {
     <div className={className} onClick={() => navigate(`/${entry.blogEntryId}`)}>
       <div className="dateColumn">{new Date(entry.publishDate).toString().substring(0,15)}</div>
       <div className="titleColumn">{entry.title || '--- no title ---'}</div>
+      {!entry.isPublished && <div id="unpublished">unpublished</div>}
     </div>
   )
 })`
   width: 100%;
-  height: 30px;
+  height: 40px;
   display: flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  &:hover {
-    background-color: #222; 
-  }
+  border-top: 1px solid #666;
+  &:hover { background-color: #222; }
+  #unpublished { color: #666; }
 `
 
 export default ({ user }) => {
