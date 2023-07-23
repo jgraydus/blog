@@ -7,7 +7,7 @@ import Control.Monad (when)
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
 import Servant
-import Web.Auth
+import Web.Auth (Auth, AuthMaybe)
 import Web.RouteHandler
 import Web.Util
 
@@ -38,12 +38,18 @@ data EntryDesc = EntryDesc
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON)
 
-type GetEntries = Get '[JSON] [EntryDesc]
+type GetEntries = AuthMaybe :> Get '[JSON] [EntryDesc]
 
 getEntriesHandler :: RouteHandler GetEntries
-getEntriesHandler = do
-  results <- findBlogEntries
-  pure $ fmap (\BlogEntry {..} -> EntryDesc {..}) results
+getEntriesHandler userIdMaybe = do
+  fmap toEntryDesc . filterResult <$> findBlogEntries
+  where
+    filterResult = case userIdMaybe of
+      -- no user logged in. return just the published entries
+      Nothing -> filter (\BlogEntry{isPublished} -> isPublished)
+      -- user logged in. return the published entries and any entries created by the user
+      Just userId' -> filter (\BlogEntry{isPublished,userId} -> isPublished || userId == userId')
+    toEntryDesc BlogEntry {..} = EntryDesc {..}
 
 -------------------------------------------------------------------------------------------
 -- GET /entries/:entryId

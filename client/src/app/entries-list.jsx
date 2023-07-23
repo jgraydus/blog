@@ -78,7 +78,7 @@ export default ({ user }) => {
       setEntries(entries)
       setLoading(false)
     })
-  }, [])
+  }, [user])
 
   const addEntry = useCallback(entry => {
     setEntries([...entries, entry])
