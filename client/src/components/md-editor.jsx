@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm'
 import styled from 'styled-components'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { Button } from 'components'
 
 const Root = styled.div`
   height: 100%;
@@ -48,7 +49,7 @@ const EditorMode = {
   Write: 'WRITE'
 };
 
-export default ({ onSave, initialValue }) => {
+export default ({ onSave, initialValue, editable = true }) => {
   const [markdown, setMarkdown] = useState(initialValue || '');
   const [mode, setMode] = useState(EditorMode.Preview);
 
@@ -96,9 +97,10 @@ export default ({ onSave, initialValue }) => {
           />
         )}
       </Editor>
-      <button onClick={toggleMode}>
-        {mode === EditorMode.Preview ? "Edit" : "Preview"}
-      </button>
+      {editable &&
+        <Button onClick={toggleMode}>
+          {mode === EditorMode.Preview ? "Edit" : "Preview"}
+        </Button>}
     </Root>
   );
 }

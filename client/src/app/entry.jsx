@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, InlineEdit, Spacer, Spinner } from 'components'
+import { Button, InlineEdit, MdEditor, Spacer, Spinner } from 'components'
 
 const PublishButton = ({ entry }) => <Button>{entry.isPublished ? 'unpublish' : 'publish'}</Button>
 
@@ -23,6 +23,11 @@ export default styled(({ className, user }) => {
   const changeTitle = useCallback(title => {
     setEntry({ ...entry, title })
     axios.patch(`/api/entries/${entry.blogEntryId}`, { title })
+  }, [entry])
+
+  const changeContent = useCallback(content => {
+    setEntry({ ...entry, content })
+    axios.patch(`/api/entries/${entry.blogEntryId}`, { content })
   }, [entry])
 
   if (loading) {
@@ -45,7 +50,13 @@ export default styled(({ className, user }) => {
         </span>
         {user && <PublishButton entry={entry}/>}
       </div>
-      <div id="content">{entry.content}</div>
+      <div id="content">
+        <MdEditor
+          onSave={changeContent}
+          initialValue={entry.content}
+          editable={!!user}
+         />
+      </div>
     </div>
   )
 })`
