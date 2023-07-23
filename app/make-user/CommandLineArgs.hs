@@ -1,6 +1,5 @@
 module CommandLineArgs where
 
-import Control.Monad.Reader (ask)
 import Data.Text (Text)
 import Logger (LogLevel(..))
 import Options.Applicative

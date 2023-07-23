@@ -5,7 +5,7 @@ module User.Query (
 import Crypto.Error (throwCryptoErrorIO)
 import Crypto.KDF.Argon2 qualified as Argon2
 import Data.ByteString.Base64 (encodeBase64)
-import Data.Text.Encoding (encodeUtf8, decodeUtf8)
+import Data.Text.Encoding (encodeUtf8)
 import Database.SQLite.Simple (Connection, Only(..), query)
 import User.Model
 
