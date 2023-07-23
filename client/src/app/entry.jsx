@@ -5,7 +5,17 @@ import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, InlineEdit, MdEditor, Spacer, Spinner } from 'components'
 
-const PublishButton = ({ entry }) => <Button>{entry.isPublished ? 'unpublish' : 'publish'}</Button>
+const PublishButton = ({ entry, setEntry }) => {
+  const toggleIsPublished = useCallback(() => {
+    setEntry({ ...entry, isPublished: !entry.isPublished })
+    axios.patch(`/api/entries/${entry.blogEntryId}`, { isPublished: !entry.isPublished })
+  }, [entry])
+  return (
+    <Button onClick={toggleIsPublished}>
+      {entry.isPublished ? 'unpublish' : 'publish'}
+    </Button>
+  )
+}
 
 export default styled(({ className, user }) => {
   const navigate = useNavigate()
@@ -46,9 +56,10 @@ export default styled(({ className, user }) => {
             onSubmit={changeTitle}
             value={entry.title}
             placeholder={'--- no title ---'}
+            disabled={!user}
           />
         </span>
-        {user && <PublishButton entry={entry}/>}
+        {user && <PublishButton entry={entry} setEntry={setEntry}/>}
       </div>
       <div id="content">
         <MdEditor
