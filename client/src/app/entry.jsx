@@ -7,8 +7,9 @@ import { Button, InlineEdit, MdEditor, Spacer, Spinner } from 'components'
 
 const PublishButton = ({ entry, setEntry }) => {
   const toggleIsPublished = useCallback(() => {
-    setEntry({ ...entry, isPublished: !entry.isPublished })
-    axios.patch(`/api/entries/${entry.blogEntryId}`, { isPublished: !entry.isPublished })
+    const update = entry.isPublished ? { isPublished: false } : { isPublished: true, publishDate: new Date }
+    setEntry({ ...entry, ...update })
+    axios.patch(`/api/entries/${entry.blogEntryId}`, update)
   }, [entry])
   return (
     <Button onClick={toggleIsPublished}>
