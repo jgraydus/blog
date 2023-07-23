@@ -5,8 +5,9 @@ module User (
     module User.Model
 ) where
 
+import Config (HasPasswordSalt(..))
 import Control.Monad.IO.Class (liftIO, MonadIO)
-import Control.Monad.Reader (MonadReader)
+import Control.Monad.Reader (asks, MonadReader)
 import DbConnPool (HasDbConnPool, withConnM)
 import User.Command qualified as Command
 import User.Model
@@ -22,7 +23,7 @@ class Monad m => UserCommand m where
   createUser :: EmailAddress -> PasswordHash -> m (Maybe User)
   updateUser :: UserId -> Maybe PasswordHash -> m (Maybe User)
 
-instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => UserQuery m where
+instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r, HasPasswordSalt r) => UserQuery m where
   findUserById userId =
     withConnM $ \conn -> Query.findUserById conn userId
 
@@ -32,7 +33,9 @@ instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => UserQuery m w
   findUserByCredentials emailAddress passwordHash =
     withConnM $ \conn -> Query.findUserByCredentials conn emailAddress passwordHash
 
-  computePasswordHash emailAddress password = liftIO $ Query.computePasswordHash emailAddress password
+  computePasswordHash emailAddress password = do
+    passwordSalt <- asks getPasswordSalt
+    liftIO $ Query.computePasswordHash emailAddress password passwordSalt
 
 instance (Monad m, MonadIO m, MonadReader r m, HasDbConnPool r) => UserCommand m where
   createUser emailAddress passwordHash =

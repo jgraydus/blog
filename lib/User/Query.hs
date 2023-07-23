@@ -31,10 +31,10 @@ findUserByCredentials conn emailAddress passwordHash = do
     [] -> pure Nothing
     [Only userId] -> pure . Just $ User userId emailAddress
 
-computePasswordHash :: EmailAddress -> Password -> IO PasswordHash
-computePasswordHash emailAddress password = do
+computePasswordHash :: EmailAddress -> Password -> PasswordSalt -> IO PasswordHash
+computePasswordHash emailAddress password passwordSalt = do
   let p = encodeUtf8 $ password
-      salt = encodeUtf8 $ emailAddress <> "who's a salty pirate? arrrrrrrrrrrrrrrr"
+      salt = encodeUtf8 $ emailAddress <> passwordSalt
       opts = Argon2.defaultOptions
       result = Argon2.hash opts p salt 128
   encodeBase64 <$> throwCryptoErrorIO result

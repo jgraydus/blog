@@ -20,3 +20,7 @@ data RequestContext = RequestContext
 
 instance HasDbConnPool RequestContext where
   getDbConnPool = dbConnPool
+
+instance HasPasswordSalt RequestContext where
+  getPasswordSalt = getPasswordSalt . config
+

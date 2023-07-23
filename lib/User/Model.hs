@@ -9,6 +9,7 @@ type UserId = Int64
 type EmailAddress = Text
 type Password = Text
 type PasswordHash = Text
+type PasswordSalt = Text
 
 data User = User
   { userId :: UserId

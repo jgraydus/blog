@@ -1,6 +1,7 @@
 { 
   "databasePath": "./blog.db",
   "logLevel": "DEBUG",
+  "passwordSalt": "who's a salty pirate? arrrrrrrrrrrrrrrr",
   "serverConfig": {
     "jwtKey": "THIS IS A SECRET",
     "port": 8000,
