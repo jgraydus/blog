@@ -31,6 +31,7 @@ const Viewport = styled.div`
       }
     }
 
+  code   { font-family: monospace; }
   code * { font-family: monospace; }
   textarea { font-family: monospace; }
 `

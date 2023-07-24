@@ -28,6 +28,7 @@ const Content = styled(({ className, children }) => (
 ))`
   height: 100%;
   width: 100%;
+  position: relative;
 `
 export default () => {
   const [loading, setLoading] = useState(true)
