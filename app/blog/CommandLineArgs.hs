@@ -11,6 +11,7 @@ parser :: Parser CommandLineArgs
 parser = CommandLineArgs
   <$> strOption
       ( long "config-file-path"
+      <> short 'c'
       <> value "./config.json"
       <> metavar "FILEPATH" )
 
