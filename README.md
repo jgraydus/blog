@@ -43,6 +43,7 @@ cabal run make-user -- -e <EMAIL ADDRESS> -p <PASSWORD>     # uses the included 
 Start the dev server:
 
 ```
-cabal run dev-server       # builds the client and server. automatically rebuilds and restarts when files change
+cabal run dev-server       # builds the client and server. automatically rebuilds and restarts
+                           # when files change
 ```
 
