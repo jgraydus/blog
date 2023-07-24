@@ -81,7 +81,7 @@ export default ({ onSave, initialValue, editable = true }) => {
                     PreTag="div"
                   />
                 ) : (
-                  <code {...profile} className={className}>
+                  <code {...props} className={className}>
                     {children}
                   </code>
                 );
