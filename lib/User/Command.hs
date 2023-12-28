@@ -17,5 +17,5 @@ createUser conn emailAddress passwordHash = do
     pure Nothing
 
 updateUser :: Connection -> UserId -> Maybe PasswordHash -> IO (Maybe User)
-updateUser conn userId passwordHash = error "Command.updatePasswordHash"
+updateUser _conn _userId _passwordHash = error "Command.updatePasswordHash"
 

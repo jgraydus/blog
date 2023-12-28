@@ -15,6 +15,7 @@ findUserById conn userId = do
   case result of
     [] -> pure Nothing
     [Only emailAddress] -> pure . Just $ User userId emailAddress
+    _ -> error "multiple results in findUserById"
 
 findUserByEmailAddress :: Connection -> EmailAddress -> IO (Maybe User)
 findUserByEmailAddress conn emailAddress = do
@@ -22,6 +23,7 @@ findUserByEmailAddress conn emailAddress = do
   case result of
     [] -> pure Nothing
     [Only userId] -> pure . Just $ User userId emailAddress
+    _ -> error "multiple results in findUserByEmailAddress"
 
 findUserByCredentials :: Connection -> EmailAddress -> PasswordHash -> IO (Maybe User)
 findUserByCredentials conn emailAddress passwordHash = do
@@ -30,6 +32,7 @@ findUserByCredentials conn emailAddress passwordHash = do
   case result of
     [] -> pure Nothing
     [Only userId] -> pure . Just $ User userId emailAddress
+    _ -> error "multiple results in findUserByCredentials"
 
 computePasswordHash :: EmailAddress -> Password -> PasswordSalt -> IO PasswordHash
 computePasswordHash emailAddress password passwordSalt = do

@@ -5,7 +5,6 @@ module DbConnPool (
 import Control.Concurrent (getNumCapabilities)
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Control.Monad.Reader (asks, MonadReader)
-import GHC.Records (getField, HasField)
 import Data.Pool (defaultPoolConfig, newPool, Pool, setNumStripes, withResource)
 import Database.SQLite.Simple (close, Connection, open)
 
