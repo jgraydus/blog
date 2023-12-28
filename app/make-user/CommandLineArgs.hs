@@ -1,10 +1,8 @@
 module CommandLineArgs where
 
 import Data.Text (Text)
-import Logger (LogLevel(..))
 import Options.Applicative
 import Options.Applicative.Text
-import Text.Read (readMaybe)
 
 data CommandLineArgs = CommandLineArgs
   { configFilePath :: FilePath
