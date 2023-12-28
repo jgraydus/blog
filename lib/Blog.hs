@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Blog (
     BlogCommand(..), BlogQuery(..),
     module Blog.Model

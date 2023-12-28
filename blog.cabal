@@ -27,7 +27,8 @@ common shared-properties
         RankNTypes,
         RecordWildCards,
         TupleSections,
-        TypeFamilies
+        TypeFamilies,
+        UndecidableInstances
 
 library
     import: shared-properties

@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module User (
     UserQuery(..),
     UserCommand(..),
