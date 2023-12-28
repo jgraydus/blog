@@ -2,4 +2,4 @@ dist-newstyle/
 client/build/
 client/node_modules/
 blog.db
-
+*.swp
