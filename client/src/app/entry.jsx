@@ -64,9 +64,10 @@ export default styled(({ className, user }) => {
       </div>
       <div id="content">
         <MdEditor
-          onSave={changeContent}
-          initialValue={entry.content}
+          blogEntryId={entry.blogEntryId}
           editable={!!user}
+          initialValue={entry.content}
+          onSave={changeContent}
          />
       </div>
     </div>
